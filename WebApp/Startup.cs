@@ -15,7 +15,7 @@ namespace WebApp
     {
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration; //added new change for pallavi to test 
+            Configuration = configuration; //added new change for pallavi to test  
         }
 
         public IConfiguration Configuration { get; }
