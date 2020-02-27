@@ -1,0 +1,175 @@
+﻿@model WebApp.ViewModels.MovieViewModel
+
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Edit</h2>
+
+<h4>MovieData</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(model => model.MovieID)
+            @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+            <div class="form-group">
+                @Html.LabelFor(model => model.Title, new { @class = "control-label" })
+                @Html.TextBoxFor(model => model.Title, new { @class = "form-control", @maxlength = "100", @placeholder = "Enter Title" })
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.Name, new { @class = "control-label" })
+                @Html.TextBoxFor(model => model.Name, new { @class = "form-control", @maxlength = "100", @placeholder = "Enter Name" })
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.Description, new { @class = "control-label" })
+                @Html.TextAreaFor(model => model.Description, new { @class = "form-control", @maxlength = "500", @placeholder = "Enter Description" })
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.LanguageID, new { @class = "control-label" })
+                @Html.DropDownListFor(model => model.LanguageID, new SelectList(ViewBag.Languages, "Value", "Text"), "--Select--", new { @class = "form-control" })
+            </div>
+            <div class="form-group" id="div_service">
+                @Html.LabelFor(model => model.contributors, new { @class = "control-label" })
+                @Html.ListBoxFor(model => model.selectedcontributors, Model.contributors, new { @class = "form-control multiple" })
+            </div>
+            <div class="form-group" id="typelist">
+                @Html.LabelFor(model => model.types, new { @class = "control-label" })
+                @Html.ListBoxFor(model => model.selectedtypes, Model.types, new { @class = "form-control multiple" })
+            </div>
+            <div class="form-group" id="div_service">
+                @Html.LabelFor(model => model.genres, new { @class = "control-label" })
+                @Html.ListBoxFor(model => model.selectedgenres, Model.genres, new { @class = "form-control multiple" })
+            </div>
+            @*<div class="form-group">
+            <label class="control-label">Select Contributor Types</label>
+            <select asp-for="selectedcontributors" asp-items="Model.contributors" multiple>
+                <option value=""></option>
+            </select>
+            <span asp-validation-for="selectedcontributors" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label class="control-label">Select Contributor Types</label>
+            <select asp-for="selectedgenres" asp-items="Model.genres" multiple>
+                <option value=""></option>
+            </select>
+            <span asp-validation-for="selectedgenres" class="text-danger"></span>
+        </div>*@
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-default" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
+    <script language="javascript" type="text/javascript">
+        $("#LanguageID").change(function () {
+                var lang_id = $(this).val();
+                var procemessage = "<option value='0'> Please wait...</option>";
+            $("#selectedcontributors").html(procemessage).show();
+            $("#selectedgenres").html(procemessage).show();
+            $("#selectedtypes").html(procemessage).show();
+
+                $.ajax({
+                    url: '@Url.Action("getContributorsByLanguageID", "movie")',
+                    data: { lang_id: lang_id },
+                    cache: false,
+                    type: "POST",
+                    success: function (data) {
+                       // alert(data[0].Text);
+                        var markup = "";
+                        //var markup = "<option value='0'>Select Type</option>";
+                        for (var x = 0; x < data.length; x++) {
+                            markup += "<option value=" + data[x].value + ">" + data[x].text + "</option>";
+                        }
+                        $("#selectedcontributors").html(markup).show();
+                    },
+                    error: function (reponse) {
+                        alert("error : " + reponse);
+                    }
+                });
+
+            $.ajax({
+                    url: '@Url.Action("getGenresByLanguageID", "movie")',
+                    data: { lang_id: lang_id },
+                    cache: false,
+                    type: "POST",
+                    success: function (data) {
+                       // alert(data[0].Text);
+                        var markup = "";
+                        //var markup = "<option value='0'>Select Type</option>";
+                        for (var x = 0; x < data.length; x++) {
+                            markup += "<option value=" + data[x].value + ">" + data[x].text + "</option>";
+                        }
+                        $("#selectedgenres").html(markup).show();
+                    },
+                    error: function (reponse) {
+                        alert("error : " + reponse);
+                    }
+            });
+
+             $.ajax({
+                    url: '@Url.Action("getContributorTypeByLanguageID", "movie")',
+                    data: { lang_id: lang_id },
+                    cache: false,
+                    type: "POST",
+                    success: function (data) {
+                       // alert(data[0].Text);
+                        var markup = "";
+                        //var markup = "<option value='0'>Select Type</option>";
+                        for (var x = 0; x < data.length; x++) {
+                            markup += "<option value=" + data[x].value + ">" + data[x].text + "</option>";
+                        }
+                        $("#selectedtypes").html(markup).show();
+                    },
+                    error: function (reponse) {
+                        alert("error : " + reponse);
+                    }
+                });
+
+        });
+
+
+         $("#selectedcontributors").change(function () {
+             var obj = [];
+               // alert();
+                ////var contributorid = $(this).val();
+                //var procemessage = "<option value='0'> Please wait...</option>";
+             //$("#selectedtypes").html(procemessage).show();
+            //// alert($("#selectedtypes").html());
+             $('#selectedcontributors option:selected').each(function (i) {
+                obj.push($(this).val());
+              });
+             //alert(obj.length);
+                $.ajax({
+                    url: '@Url.Action("getContributorTypesByContributorID", "movie")',
+                    data: { contributors: obj },
+                    cache: false,
+                    type: "POST",
+                     success: function (data) {
+                       // alert(data[0].Text);
+                        var markup = "";
+                        //var markup = "<option value='0'>Select Type</option>";
+                        for (var x = 0; x < data.length; x++) {
+                            markup += "<option value=" + data[x].value + ">" + data[x].text + "</option>";
+                        }
+                        $("#selectedtypes").html(markup).show();
+                    },
+                    error: function (reponse) {
+                        alert("error : " + reponse);
+                    }
+                });
+
+        });
+    </script>
+}

@@ -1,0 +1,54 @@
+﻿@model WebApp.Models.GenreData
+
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>GenreData</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        @Html.HiddenFor(model => model.GenreID)
+        <dt>
+            @Html.DisplayNameFor(model => model.Title)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Title)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Description)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Description)
+        </dd>
+        <dt>
+            Language
+        </dt>
+        <dd>
+            @if (@Model.LanguageID == 1)
+            {
+                <span>English</span>
+            }
+            else if (Model.LanguageID == 2)
+            {
+                <span>Arabic</span>
+            }
+            else
+            { <span>French</span>}
+
+        </dd>
+    </dl>
+</div>
+<div>
+    @Html.ActionLink("Edit", "Edit", new {  id = Model.GenreID  }) |
+    <a asp-action="Index">Back to List</a>
+</div>
